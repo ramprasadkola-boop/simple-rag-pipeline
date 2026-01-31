@@ -45,6 +45,20 @@ def create_parser():
         help="Path to a .json file with question/expected_answer pairs.",
     )
 
+    # Crawl4AI configuration arguments
+    parser.add_argument(
+        "--crawl4ai-disable",
+        action="store_true",
+        help="Disable Crawl4AI integration (runs offline-only, no web search or LLM calls).",
+    )
+
+    parser.add_argument(
+        "--crawl4ai-url",
+        type=str,
+        default="http://localhost:11235",
+        help="Crawl4AI server URL (default: http://localhost:11235). Ignored if --crawl4ai-disable is set.",
+    )
+
     # Then create subparsers
     subparsers = parser.add_subparsers(dest="command", help="Commands", required=True)
 

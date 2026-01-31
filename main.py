@@ -36,6 +36,16 @@ def create_pipeline() -> RAGPipeline:
 def main():
     parser = create_parser()  # Create the CLI parser
     args = parser.parse_args()
+    
+    # Apply Crawl4AI configuration from command-line arguments
+    # Crawl4AI is enabled by default; use --crawl4ai-disable to turn it off
+    if args.crawl4ai_disable:
+        os.environ["CRAWL4AI_ENABLE"] = "0"
+    # else: use default (enabled)
+    
+    if args.crawl4ai_url:
+        os.environ["CRAWL4AI_URL"] = args.crawl4ai_url
+    
     pipeline = create_pipeline()
 
     # Process source paths and eval path

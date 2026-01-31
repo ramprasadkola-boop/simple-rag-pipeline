@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import os
 import logging
-from util.http_client import get_session
+from util.http_client import get_session, is_crawl4ai_available
 
 try:
     import chromadb
@@ -32,8 +32,9 @@ class Datastore(BaseDatastore):
         self.collection = None
         self.embed_model = None
         # Crawl4AI HTTP base URL (optional) and enable flag
+        # Default enabled (only calls when needed - no local results)
         self.crawl4ai_url = os.environ.get("CRAWL4AI_URL", "http://localhost:11235")
-        self.crawl4ai_enabled = os.environ.get("CRAWL4AI_ENABLE", "0").lower() in ("1", "true", "yes")
+        self.crawl4ai_enabled = os.environ.get("CRAWL4AI_ENABLE", "1").lower() in ("1", "true", "yes")
         self.logger = logging.getLogger(__name__)
         # Use singleton HTTP session (1 connection max, shared across app)
         self._http = get_session()
@@ -224,6 +225,11 @@ class Datastore(BaseDatastore):
         """Escalate search to Crawl4AI when local collection is empty or has no results."""
         if not self.crawl4ai_enabled:
             self.logger.debug("Crawl4AI escalation disabled (CRAWL4AI_ENABLE not set)")
+            return None
+        
+        # Check if Crawl4AI is available before attempting connections
+        if not is_crawl4ai_available(self.crawl4ai_url):
+            self.logger.debug("Crawl4AI unavailable at %s", self.crawl4ai_url)
             return None
         
         try:

@@ -3,7 +3,7 @@ import logging
 from typing import List
 from interface.base_response_generator import BaseResponseGenerator
 from util.invoke_ai import invoke_ai
-from util.http_client import get_session
+from util.http_client import get_session, is_crawl4ai_available
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +22,18 @@ Provide a concise, factual answer based on the search results.
 class ResponseGenerator(BaseResponseGenerator):
     def __init__(self):
         self.crawl4ai_url = os.environ.get("CRAWL4AI_URL", "http://localhost:11235")
-        self.crawl4ai_enabled = os.environ.get("CRAWL4AI_ENABLE", "0").lower() in ("1", "true", "yes")
+        # Crawl4AI is enabled by default (only calls when needed - no local results)
+        self.crawl4ai_enabled = os.environ.get("CRAWL4AI_ENABLE", "1").lower() in ("1", "true", "yes")
 
     def _search_crawl4ai_web(self, query: str) -> str:
         """Attempt to search the web via Crawl4AI and return the answer."""
         if not self.crawl4ai_enabled:
             logger.debug("Crawl4AI web search disabled (CRAWL4AI_ENABLE not set)")
+            return None
+
+        # Check if Crawl4AI is available before attempting connections
+        if not is_crawl4ai_available(self.crawl4ai_url):
+            logger.debug("Crawl4AI unavailable at %s", self.crawl4ai_url)
             return None
 
         from util.http_client import get_session

@@ -23,7 +23,8 @@ def invoke_ai(system_message: str, user_message: str, base_url: Optional[str] = 
     if base_url is None:
         base_url = os.environ.get("CRAWL4AI_URL", "http://localhost:11235")
 
-    enabled = os.environ.get("CRAWL4AI_ENABLE", "0").lower() in ("1", "true", "yes")
+    # Crawl4AI is enabled by default (only calls when needed)
+    enabled = os.environ.get("CRAWL4AI_ENABLE", "1").lower() in ("1", "true", "yes")
     if not enabled:
         logger.debug("Crawl4AI invoke disabled (CRAWL4AI_ENABLE not set). Returning fallback message.")
         # Provide a useful but safe fallback response
