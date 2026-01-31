@@ -10,7 +10,7 @@ The RAG Framework lets you:
 
 - **Index Documents:** Process and break documents (e.g., PDFs) into smaller, manageable chunks.
 - **Store & Retrieve Information:** Save document embeddings in a vector database (using LanceDB) and search using similarity.
-- **Generate Responses:** Use an AI model (via the OpenAI API) to provide concise answers based on the retrieved context.
+-- **Generate Responses:** Use a local model (via Crawl4AI or a local `sentence-transformers` model) to provide concise answers based on the retrieved context.
 - **Evaluate Responses:** Compare the generated response against expected answers and view the reasoning behind the evaluation.
 
 ## Architecture
@@ -44,17 +44,28 @@ pip install -r requirements.txt
 
 #### Configure Environment Variables
 
-We use OpenAI for the LLM (you can modify/replace it in `src/util/invoke_ai.py`). Make sure to set your OpenAI API key. For example:
+We use a local Crawl4AI server or local models for LLM and embeddings. See `./scripts/crawl4ai_postinstall.sh` to set up Crawl4AI locally. If you prefer local embeddings only, install `sentence-transformers`.
 
-```sh
-export OPENAI_API_KEY='your_openai_api_key'
-```
-
-You will also need a Cohere key for the re-ranking feature used in `src/impl/retriever.py`. You can create an account and create an API key at https://cohere.com/
-
+If you previously used OpenAI, remove any `OPENAI_API_KEY` environment variables — this project no longer depends on OpenAI.
 ```sh
 set -x CO_API_KEY "xxx"
 ```
+
+## Crawl4AI Post-install (optional)
+
+This project can integrate with a local Crawl4AI installation, but the post-install helper is disabled by default because it performs OS-specific setup (browsers, model downloads) and may not be appropriate in every environment.
+
+To run the post-install helper once (idempotent), set the environment variable `RUN_CRAWL4AI_POSTINSTALL=1` and then run the CLI or the script manually:
+
+```bash
+# enable and run via the CLI
+RUN_CRAWL4AI_POSTINSTALL=1 PYTHONPATH=src python main.py run
+
+# or run the helper directly
+RUN_CRAWL4AI_POSTINSTALL=1 ./scripts/crawl4ai_postinstall.sh
+```
+
+If you do not wish to use Crawl4AI, skip this step — the pipeline will still work with local `sentence-transformers` for embeddings.
 
 ## Usage
 

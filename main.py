@@ -1,11 +1,18 @@
 import glob
 import json
 import os
+import sys
 from typing import List
+from pathlib import Path
+
+# Ensure `src` is importable when running `python main.py` from project root.
+repo_root = Path(__file__).resolve().parent
+src_path = repo_root / "src"
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
 from rag_pipeline import RAGPipeline
 from create_parser import create_parser
-
-from impl import Datastore, Indexer, Retriever, ResponseGenerator, Evaluator
 
 
 DEFAULT_SOURCE_PATH = "sample_data/source/"
@@ -14,6 +21,10 @@ DEFAULT_EVAL_PATH = "sample_data/eval/sample_questions.json"
 
 def create_pipeline() -> RAGPipeline:
     """Create and return a new RAG Pipeline instance with all components."""
+    # Import impl components lazily to avoid import-time errors when optional
+    # dependencies are not installed.
+    from impl import Datastore, Indexer, Retriever, ResponseGenerator, Evaluator
+
     datastore = Datastore()
     indexer = Indexer()
     retriever = Retriever(datastore=datastore)

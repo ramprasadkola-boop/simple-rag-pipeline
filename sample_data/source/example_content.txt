@@ -1,0 +1,31 @@
+# Python Best Practices
+
+## 1. Code Style and Readability
+- Use meaningful variable names that describe the data they hold
+- Keep functions small and focused on a single responsibility
+- Write docstrings for all public functions and classes
+- Follow PEP 8 style guidelines
+
+## 2. Error Handling
+- Always handle exceptions explicitly, don't use bare except clauses
+- Use custom exceptions for library-specific errors
+- Log errors with context information
+- Never silently ignore errors
+
+## 3. Testing
+- Write unit tests for all critical functionality
+- Aim for 80%+ code coverage
+- Use pytest for testing framework
+- Mock external dependencies in tests
+
+## 4. Performance Optimization
+- Profile code before optimizing
+- Use appropriate data structures for your use case
+- Avoid premature optimization
+- Document performance-critical sections
+
+## 5. Documentation
+- Keep README files up-to-date
+- Document API endpoints and functions
+- Include usage examples
+- Maintain a changelog
